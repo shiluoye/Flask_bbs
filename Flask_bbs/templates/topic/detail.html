@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}{{ topic.title }}{% endblock %}
+{% block main %}
+    <div id="main">
+        {% include 'sidebar.html' %}
+        <div id="content">
+            <div class='panel'>
+                <div class='header topic_header'>
+                    <span class="topic_full_title">{{ topic.title }}</span>
+                    <div class="changes">
+                        <span>
+                            发布于
+                            <span class="created-time" data-created_time="{{ topic.created_time }}"></span>
+                        </span>
+                        <span>
+                            作者<a href="{{ url_for('index.user_detail',id=user.id) }}">{{ user.username }}</a>
+                        </span>
+                        <span>
+                        {{ topic.views }} 次浏览
+                        </span>
+                        <span>
+                        来自<a href="{{ url_for('index.index',board_id=board.id) }}">{{ board.title }}</a>
+                        </span>
+                    </div>
+                    <div id="manage_topic">
+                        {% set current = current_user() %}
+                        {% if current and current.is_admin() %}
+                            <a href='/topic/top/{{ topic.id }}' data-method="post">
+                                {% if topic.top %}
+                                    <i class="fa fa-lg fa-star-o" title='取消置顶'></i>
+                                {% else %}
+                                    <i class="fa fa-lg fa-star" title='置顶'/></i>
+                                {% endif %}
+                            </a>
+
+                            <a href='/topic/good/{{ topic.id }}' data-method="post">
+                                {% if topic.good %}
+                                    <i class="fa fa-lg fa-heart-o" title="取消精华"></i>
+                                {% else %}
+                                    <i class="fa fa-lg fa-heart" title="加精华"></i>
+                                {% endif %}
+                            </a>
+
+                            <a href='/topic/lock/{{ topic.id }}' data-method="post">
+                                {% if topic.lock %}
+                                    <i class="fa fa-lg fa-unlock" title='取消锁定'></i>
+                                {% else %}
+                                    <i class="fa fa-lg fa-lock" title='锁定（不可再回复）'/></i>
+                                {% endif %}
+                            </a>
+                            <a href='{{ url_for('.edit', id=topic.id, _csrf=csrf_token) }}'>
+                                <i class="fa fa-lg fa-pencil-square-o" title='编辑'></i></a>
+                            <a href='{{ url_for('.delete', id=topic.id, _csrf=csrf_token) }}'>
+                                <i class="fa fa-lg fa-trash" title='删除'></i></a>
+                        {% endif %}
+                        {% if current and  current.id == user.id %}
+                            <a href='{{ url_for('.edit', id=topic.id, _csrf=csrf_token) }}'>
+                                <i class="fa fa-lg fa-pencil-square-o" title='编辑'></i></a>
+                            <a href='{{ url_for('.delete', id=topic.id, _csrf=csrf_token) }}'>
+                                <i class="fa fa-lg fa-trash" title='删除'></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class='inner topic'>
+                    <div class='topic_content'>
+                        <div class="markdown-text">{{ topic.content }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class='panel'>
+                <div class='header'>
+                    <span class='col_fade'>
+                        <!-- 过滤器 -->
+                        {{ topic.replies() | count }} 回复
+                    </span>
+                </div>
+                {% for r in topic.replies() %}
+                    {% set replier = r.user() %}
+                    <div class='cell reply_area reply_item' id="{{ loop.index }}">
+                        <div class='author_content'>
+                            <a href="/user/{{ replier.id }}" class="user_avatar">
+                                <img src="{{ replier.image }}" title="{{ replier.username }}"/>
+                            </a>
+                            <div class='user_info'>
+                                <a class='dark reply_author' href="/user/{{ replier.id }}">{{ replier.username }}</a>
+                                <a class="reply_time" href="#{{ loop.index }}">{{ loop.index }}楼 / {{ loop.length }}楼
+                                    <span class="created-time" data-created_time="{{ r.created_time }}"></span>
+                                </a>
+                                {% if replier == user %}
+                                    <span class="reply_by_author">作者</span>
+                                {% endif %}
+                            </div>
+                            <div class='user_action'>
+                                {% if current and current.is_admin() %}
+                                    <a href='/reply/edit/{{ r.id }}' class='edit_reply_btn'>
+                                        <i class="fa fa-pencil-square-o" title='编辑'></i>
+                                    </a>
+                                    <a href='/reply/delete/{{ r.id }}' class='delete_reply_btn'>
+                                        <i class="fa fa-trash" title='删除'></i>
+                                    </a>
+                                {% endif %}
+                                <span>
+                                {% if current %}
+                                    <a href="#reply_form">
+                                {% else %}
+                                    <a href="{{ url_for('index.login_view') }}">
+                                {% endif %}
+                                    <i class="fa fa-reply reply2_btn" title="回复"></i></a>
+                                </span>
+                            </div>
+                        </div>
+                        <div class='reply_content from-{{ replier.username }}'>
+                            <div class="markdown-text">{{ r.content }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class='panel'>
+                <div class='header'>
+                    <span class='col_fade'>添加回复</span>
+                </div>
+                <div class='inner reply'>
+                    <form id='reply_form' action='{{ url_for('reply.add') }}' method='post'>
+                        <div class='markdown_editor in_editor'>
+                            <div class='markdown_in_editor'>
+                                <textarea class='editor' name='content' rows='8'></textarea>
+
+                                <div class='editor_buttons'>
+                                    <input class='span-primary submit_btn' type="submit"
+                                           data-loading-text="回复中.." value="回复">
+                                </div>
+                            </div>
+                        </div>
+                        <input type='hidden' name='_csrf' value='{{ csrf_token }}'/>
+                        <input type="hidden" name="topic_id" value="{{ topic.id }}">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

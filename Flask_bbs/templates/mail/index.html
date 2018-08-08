@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}消息{% endblock %}
+{% block main %}
+    <div id="main">
+        {% include 'sidebar.html' %}
+        <div id='content'>
+            <div class='panel'>
+                <div class='header'>
+                    <ul class='breadcrumb'>
+                        <li><a href='/'>主页</a><span class='divider'>/</span></li>
+                        <li class='active'>新消息</li>
+                    </ul>
+                </div>
+                {% for r in received %}
+                    <div class='cell' message_id='r.id'>
+                        <div class='cell message' message_id='r.id'>
+                            <span>
+                                <a href="/user/{{ r.sender_id }}" target='_blank'>{{ r.sender().username }}</a>
+                                发送给你：
+                                <a href="{{ url_for('.view', id = r.id) }}">{{ r.title }}</a>
+                            </span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class='panel'>
+                <div class='header'>
+                    <span class="col_fade">已发送邮件</span>
+                </div>
+                {% for s in send %}
+                    <div class='cell' message_id='r.id'>
+                        <div class='cell message' message_id='r.id'>
+                            <span>
+                                你发送给
+                                <a href="/user/{{ s.receiver_id }}" target='_blank'>{{ s.receiver().username }}</a>
+                                ：
+                                <a href="{{ url_for('.view', id = s.id) }}">{{ s.title }}</a>
+                            </span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class='panel'>
+                <div class='header'>
+                    <span class="col_fade">发送邮件</span>
+                </div>
+                <div class="inner post">
+                    <form id="create_topic_form" method="post" action="{{ url_for('.add') }}">
+                        <fieldset>
+                            <input type="text" name="receiver_name" placeholder="收件人站内昵称">
+                            <textarea autofocus class='span9' id='title' name='title' rows='1'
+                                      placeholder="主题"></textarea>
+                            <div class='markdown_editor in_editor'>
+                                <div class='markdown_in_editor'>
+                                    <textarea class='editor' name='content' rows='20'
+                                              placeholder='支持 Markdown 语法, 请注意标记代码'></textarea>
+                                    <div class='editor_buttons'>
+                                        <input type="submit" class='span-primary submit_btn' data-loading-text="发送中"
+                                               value="发送邮件">
+                                    </div>
+                                </div>
+                            </div>
+                            <input type='hidden' name='_csrf' value={{ csrf_token }}>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}论坛主页{% endblock %}
+{% block main %}
+    <div id="main">
+        {% include 'sidebar.html' %}
+        <div id="content">
+            <div class="panel">
+                <div class="header">
+                    <a href="/"
+                       class="topic-tab">
+                        全部
+                    </a>
+                    {% for b in bs %}
+                        <a href="/?board_id={{ b.id }}"
+                           class="topic-tab">
+                            {{ b.title }}
+                        </a>
+                    {% endfor %}
+                </div>
+                <div class="inner no-padding">
+                    <div class="topic_list">
+                        {% for t in ms %}
+                            {% set u = t.user() %}
+                            {% include 'topic/abstract.html' %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

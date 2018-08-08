@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}{{ user.username }}的个人主页{% endblock %}
+{% block main %}
+    <div id="main">
+        {% include 'sidebar.html' %}
+        <div id="content">
+            <div class="panel">
+                <div class="header">
+                    <ul class="breadcrumb">
+                        <li><a href="{{ url_for('.index') }}">主页</a><span class="divider">/</span></li>
+                    </ul>
+                </div>
+                <div class="inner userinfo">
+                    <div class="user_big_avatar">
+                        <img src="{{ user.image }}" class="user_avatar"
+                             title={{ user.username }}>
+                    </div>
+                    <a class="dark">{{ user.username }}</a>
+                    <p class="col_fade">注册时间 <span class="created-time"
+                                                   data-created_time="{{ user.created_time }}"></span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="header">
+                    <span class="col_fade">最近创建的话题</span>
+                </div>
+
+                {% if created %}
+                    {% for t in created %}
+                        {% set u = t.user() %}
+                        {% include 'topic/abstract.html' %}
+                        {#            <div class="cell more">#}
+                        {#                <a class="dark" href="/user/justjavac/replies">查看更多»</a>#}
+                        {#            </div>#}
+                    {% endfor %}
+                {% else %}
+                    <div class='inner'>
+                        <p>无话题</p>
+                    </div>
+                {% endif %}
+
+            </div>
+
+            <div class="panel">
+                <div class="header">
+                    <span class="col_fade">最近参与的话题</span>
+                </div>
+                {% if replied %}
+                    {% for t in replied %}
+                        {% set u = t.user() %}
+                        {% include 'topic/abstract.html' %}
+                        {#            <div class="cell more">#}
+                        {#                <a class="dark" href="/user/justjavac/replies">查看更多»</a>#}
+                        {#            </div>#}
+                    {% endfor %}
+                {% else %}
+                    <div class='inner'>
+                        <p>无话题</p>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

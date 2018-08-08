@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}关于我们{% endblock %}
+{% block main %}
+    <div id="main">
+        {% include 'sidebar.html' %}
+        <div id='content'>
+            <div class='panel'>
+                <div class='header'>
+                    <ul class='breadcrumb'>
+                        <li><a href='/'>主页</a><span class='divider'>/</span></li>
+                        <li class='active'>关于</li>
+                    </ul>
+                </div>
+                <div class='inner topic'>
+                    <div class="topic_content markdown-text">
+### 关于
+网站界面参考 CNode
+### 更新
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

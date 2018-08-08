@@ -1,0 +1,32 @@
+<div class="cell">
+    <a class="user_avatar pull-left" href="/user/{{ t.user_id }}">
+        <img src="{{ u.image }}" title="{{ u.username }}"/>
+    </a>
+
+    <span class="reply_count pull-left">
+        <span class="count_of_replies" title="回复数">
+          {{ t.replies() | count }}
+        </span>
+        <span class="count_seperator">/</span>
+        <span class="count_of_visits" title='点击数'>
+          {{ t.views }}
+        </span>
+    </span>
+
+    {% set r = t.last_reply() %}
+    {% if r is not none %}
+        {% set replier = r.user() %}
+        <a class='last_time pull-right' href="{{ url_for('topic.detail', id=t.id, _anchor=t.replies() | count) }}">
+            <img class="user_small_avatar" src="{{ replier.image }}">
+            <span class="last_active_time created-time" data-created_time="{{ r.created_time }}"></span>
+        </a>
+    {% else %}
+        <span class='last_time pull-right'>
+          <span class="last_active_time created-time" data-created_time="{{ t.created_time }}"></span>
+        </span>
+    {% endif %}
+
+    <div class="topic_title_wrapper">
+        <a class="topic_title" href="{{ url_for('topic.detail', id=t.id) }}">{{ t.title }}</a>
+    </div>
+</div>
